@@ -111,30 +111,38 @@
   </div>
   <div class="group" id="group-garden" role="tabpanel" aria-labelledby="tab-garden">
     <section class="ctrl wide">
-      <label class="label" for="greenery">Greenery</label>
-      <input type="range" id="greenery" data-key="greenery" min="0" max="1" step="0.05" value="0.5">
-    </section>
-    <section class="ctrl wide">
       <button type="button" class="add-btn" id="act-add">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
         Shop items
       </button>
-      <p class="tip">Drag things to move them. Tap one to turn, copy or delete it.</p>
     </section>
-    <section class="ctrl wide">
-      <span class="label" id="water-label">Water</span>
-      <div class="chips" role="group" aria-labelledby="water-label">
-        <button type="button" class="chip" id="water-paint" aria-pressed="false">Paint water</button>
-        <button type="button" class="chip" id="water-erase" aria-pressed="false">Remove water</button>
+    <section class="ctrl wide garden-card">
+      <div class="garden-row">
+        <div class="garden-slider">
+          <label class="label" for="greenery">Greenery</label>
+          <input type="range" id="greenery" data-key="greenery" min="0" max="1" step="0.05" value="0.5">
+        </div>
+        <div class="garden-fence">
+          <span class="label" id="fence-label">Fence</span>
+          <button type="button" class="switch" id="fence" role="switch" aria-checked="false" aria-labelledby="fence-label"></button>
+        </div>
       </div>
-      <p class="tip"><button type="button" id="water-clear">Clear all water</button></p>
     </section>
-    <section class="ctrl wide toggle-row">
-      <span class="label" id="fence-label">Fence</span>
-      <button type="button" class="switch" id="fence" role="switch" aria-checked="false" aria-labelledby="fence-label"></button>
+    <section class="ctrl wide garden-card">
+      <span class="label" id="water-label">Water brush</span>
+      <div class="segmented" role="group" aria-labelledby="water-label">
+        <button type="button" id="water-paint" aria-pressed="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg>Paint
+        </button>
+        <button type="button" id="water-erase" aria-pressed="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 20h11M5 15l8-8 5 5-6 6H8z"/></svg>Erase
+        </button>
+      </div>
     </section>
-    <section class="ctrl wide">
-      <p class="tip"><button type="button" id="reset-garden">Clear all items</button></p>
+    <section class="ctrl wide garden-clear">
+      <span>Clear</span>
+      <button type="button" id="reset-garden">All items</button>
+      <button type="button" id="water-clear">All water</button>
     </section>
   </div>
 </aside>

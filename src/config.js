@@ -61,8 +61,7 @@ export const STYLES = {
 export const SWATCHES = {
   wallColor: [
     ['#ffd36e', 'Butter'], ['#f9b8c4', 'Blush'], ['#a8e6c8', 'Mint'], ['#a9d4f5', 'Sky'],
-    ['#d3c1f5', 'Lilac'], ['#fff3df', 'Cream'], ['#f0a07a', 'Terracotta'],
-    ['#d96a55', 'Barn red'], ['#d8d0c3', 'Stone'], ['#a8553f', 'Brick'],
+    ['#fff3df', 'Cream'], ['#d96a55', 'Barn red'], ['#d8d0c3', 'Stone'], ['#a8553f', 'Brick'],
   ],
   roofColor: [
     ['#b98af0', 'Lavender'], ['#e0775a', 'Clay tile'], ['#6f7fa8', 'Slate'],
