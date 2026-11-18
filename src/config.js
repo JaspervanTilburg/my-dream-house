@@ -15,7 +15,7 @@ export const P = {
 
 // Current design. Later milestones change this object from the UI.
 // Who this house is for. Change these to personalize the sign, plaque and postcard.
-export const HOME = { names: 'Charlotte & Thomas', initials: 'C&T', number: '32' };
+export const HOME = { initials: 'C&T', number: '32' };
 
 export const state = {
   // Room blocks "column,floor" (see layout.js); starts as 2 rooms, 1 floor.

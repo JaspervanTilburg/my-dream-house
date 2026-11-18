@@ -1,5 +1,5 @@
 import gsap from 'gsap';
-import { HOME, STYLES, SWATCHES, reducedMotion, state } from '../config.js';
+import { STYLES, SWATCHES, reducedMotion, state } from '../config.js';
 import { describe, randomLayout } from '../layout.js';
 import { frontsFor, roofExtrasFor } from '../fronts.js';
 import { clouds } from '../fx/ambient.js';
@@ -164,7 +164,7 @@ document.getElementById('act-postcard').addEventListener('click', async () => {
 
   g.fillStyle = state.night ? '#fff8f0' : '#3d2f4f';
   g.font = '800 64px "Baloo 2", "Trebuchet MS", sans-serif';
-  g.fillText(HOME.names, 60, 100);
+  g.fillText('My Dream House', 60, 100);
   g.fillStyle = state.night ? '#d9d2f2' : '#7a6a8c';
   g.font = '700 26px Nunito, system-ui, sans-serif';
   const rooms = state.cells.length, floors = describe(state.cells).height;

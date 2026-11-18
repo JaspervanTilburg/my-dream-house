@@ -37,7 +37,6 @@ body {
   line-height: 1.1;
   color: var(--ink);
 }
-.brand p { margin: 2px 0 0; font-size: 0.85rem; color: var(--ink-soft); }
 /* Background scenery: pale, low-contrast hills and tiny floating islands far
    away, plus the odd bird pair or balloon. It sits behind the see-through
    canvas, and dims with the evening (--night, set by night.js). */
@@ -585,14 +584,6 @@ body.starting .zoom { opacity: 0; visibility: hidden; pointer-events: none; }
   transition: opacity 0.5s ease, transform 0.6s ease;
 }
 .start.leaving { opacity: 0; transform: scale(1.06); pointer-events: none; }
-.start-for {
-  margin: 0;
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: clamp(1rem, 2.6vw, 1.35rem);
-  letter-spacing: 0.06em;
-  color: var(--ink-soft);
-}
 .start h1 {
   margin: 0;
   font-family: var(--font-display);
@@ -670,7 +661,6 @@ body.starting .brand, body.starting .panel, body.starting .toolbar {
   .chips { grid-template-columns: repeat(3, 1fr); }
   .chips .chip:last-child:nth-child(odd) { grid-column: auto; }
   .brand h1 { font-size: 1.4rem; }
-  .brand p { display: none; }
   .toolbar {
     left: max(16px, env(safe-area-inset-left, 0px));
     right: max(16px, env(safe-area-inset-right, 0px));
