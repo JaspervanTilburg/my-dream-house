@@ -20,3 +20,4 @@ Fronts and roof extras can also be set in the address:
 - `_zoom.html` zooms with the buttons and the wheel, pans by dragging the lawn, then taps the house.
 - `_roofterrace.html` makes a roof terrace, drags a sun lounger onto it and logs whether it stands up there (`?style=modern` etc.).
 - `_water.html` paints a river from the edge and a pond with the water brush, then wipes part of it (`?start=night%3D1%26style%3Dbeach` etc.).
+- `_panel.html` collapses the controls panel at phone size and logs the camera before and after.

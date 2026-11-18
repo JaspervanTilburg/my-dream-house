@@ -54,6 +54,10 @@
   <h1>Dream House</h1>
 </header>
 <aside class="panel" id="panel" aria-label="House controls">
+  <button type="button" class="panel-toggle" id="panel-toggle" aria-expanded="true" aria-controls="panel" aria-label="Collapse the controls">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    <span>Controls</span>
+  </button>
   <div class="tabs" role="tablist" aria-label="Control groups">
     <button type="button" role="tab" id="tab-house" aria-controls="group-house" aria-selected="true">House</button>
     <button type="button" role="tab" id="tab-shape" aria-controls="group-shape" aria-selected="false">Shape</button>
@@ -132,6 +136,10 @@
   </div>
 </aside>
 <nav class="toolbar" id="toolbar" aria-label="Actions">
+  <button type="button" class="bar-toggle" id="toolbar-toggle" aria-expanded="true" aria-controls="toolbar" aria-label="Collapse the toolbar">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    <span>Tools</span>
+  </button>
   <button type="button" id="act-reset" aria-label="Reset">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/><path d="M10 20v-5h4v5"/></svg>
     <span class="label-text">Reset</span>

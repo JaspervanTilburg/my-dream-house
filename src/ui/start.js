@@ -2,6 +2,7 @@ import gsap from 'gsap';
 import { reducedMotion } from '../config.js';
 import { clouds } from '../fx/ambient.js';
 import { sfx } from '../fx/audio.js';
+import { resetScene } from '../fx/actions.js';
 import { fitCamera, placeCamera, setStartFrame, view } from '../scene.js';
 
 // ---------------------------------------------------------------------------
@@ -53,6 +54,7 @@ function finish(animate) {
 go.addEventListener('click', () => {
   if (!starting) return;
   sfx.chime();
+  resetScene(); // every game starts from the basic one-room cottage
   finish(true);
 });
 

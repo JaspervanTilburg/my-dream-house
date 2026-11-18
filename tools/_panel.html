@@ -1,0 +1,15 @@
+<!doctype html><html><body style="margin:0">
+<iframe id="f" src="/index.html?debug" style="width:400px;height:850px;border:0"></iframe>
+<div id="log" style="position:fixed;left:8px;bottom:8px;font:12px monospace;color:#b00;background:#fff"></div>
+<script>
+// Collapses the controls panel at phone size and logs the camera before and after.
+const log = m => { document.getElementById('log').textContent += ' | ' + m; };
+const f = document.getElementById('f');
+f.addEventListener('load', () => setTimeout(() => {
+  const w = f.contentWindow, dh = w.__dreamHouse;
+  const cam = () => `top ${dh.camera.top.toFixed(2)} bottom ${dh.camera.bottom.toFixed(2)}`;
+  log('open: ' + cam() + ' panelTop ' + w.document.getElementById('panel').getBoundingClientRect().top.toFixed(0));
+  w.document.getElementById('panel-toggle').click();
+  setTimeout(() => { dh.gsap.globalTimeline.getChildren(true, true, false).forEach(t => t.progress(1)); log('collapsed: ' + cam() + ' panelTop ' + w.document.getElementById('panel').getBoundingClientRect().top.toFixed(0)); }, 500);
+}, 5000));
+</script></body></html>

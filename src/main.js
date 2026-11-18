@@ -6,6 +6,7 @@ import './fx/actions.js';
 import './drag.js';
 import './ui/shop.js';
 import './ui/zoom.js';
+import './ui/panel.js';
 import './fx/flyers.js';
 import { redrawWater, waterTick } from './water.js';
 import { setWater } from './waterdata.js';

@@ -23,3 +23,4 @@ zoomIn.addEventListener('click', () => zoomAt(...center(), 1.5));
 zoomOut.addEventListener('click', () => zoomAt(...center(), 1 / 1.5));
 zoomFit.addEventListener('click', resetZoom);
 sync();
+

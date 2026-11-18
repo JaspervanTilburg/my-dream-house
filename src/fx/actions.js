@@ -14,8 +14,7 @@ import { resetZoom } from '../scene.js';
 
 // Reset: back to a plain starting scene. A one-room cottage, tall walls, no
 // greenery, no water and an empty garden.
-document.getElementById('act-reset').addEventListener('click', () => {
-  sfx.whoosh();
+export function resetScene() {
   select(null);
   const st = STYLES.cottage;
   Object.assign(state, {
@@ -29,6 +28,11 @@ document.getElementById('act-reset').addEventListener('click', () => {
   setNight(false);
   syncControls();
   update();
+}
+
+document.getElementById('act-reset').addEventListener('click', () => {
+  sfx.whoosh();
+  resetScene();
   resetZoom();
 });
 

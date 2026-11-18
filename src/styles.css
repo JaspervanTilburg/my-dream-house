@@ -504,6 +504,60 @@ body.starting .zoom { opacity: 0; visibility: hidden; pointer-events: none; }
   }
 }
 
+/* Collapse / expand the controls panel. Expanded: a small round tab on the
+   panel's top edge. Collapsed: the panel shrinks to a "Controls" pill. */
+.panel-toggle {
+  position: absolute;
+  top: 12px;           /* inside the scrolling side panel; on phones it sits on the top edge */
+  right: 12px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  min-width: 30px;
+  padding: 0 7px;
+  border: none;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(61, 47, 79, 0.25);
+}
+.panel-toggle svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s; }
+.panel-toggle span { display: none; }
+.panel-toggle:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.panel.collapsed { width: auto; padding: 0; background: none; box-shadow: none; backdrop-filter: none; }
+.panel.collapsed > :not(.panel-toggle) { display: none !important; }
+.panel.collapsed .panel-toggle { position: static; height: 44px; padding: 0 16px 0 12px; }
+.panel.collapsed .panel-toggle span { display: inline; }
+.panel.collapsed .panel-toggle svg { transform: rotate(180deg); }
+@media (min-width: 641px) {
+  .panel-toggle svg { transform: rotate(-90deg); }          /* points right: slide away to the side */
+  .panel.collapsed .panel-toggle svg { transform: rotate(90deg); }
+}
+/* The toolbar's own collapse button: the first button in the bar. Down on
+   desktop (the bar sits at the bottom), up on phones (it sits at the top). */
+.toolbar .bar-toggle { padding: 0 10px; background: var(--accent); color: #fff; }
+.toolbar .bar-toggle svg { fill: none; stroke: currentColor; stroke-width: 3; transition: transform 0.2s; }
+.toolbar .bar-toggle span { display: none; }
+.toolbar.collapsed > :not(.bar-toggle) { display: none !important; }
+.toolbar.collapsed .bar-toggle { padding: 0 16px 0 12px; }
+.toolbar.collapsed .bar-toggle span { display: inline; }
+.toolbar.collapsed .bar-toggle svg { transform: rotate(180deg); }
+
+@media (max-width: 640px) {
+  .toolbar .bar-toggle svg { transform: rotate(180deg); }
+  .toolbar.collapsed .bar-toggle svg { transform: none; }
+  .toolbar.collapsed { right: auto; }
+  .toolbar.collapsed .bar-toggle span { display: inline !important; }
+  .panel-toggle { top: -15px; right: 18px; }
+  .panel.collapsed { left: auto; }
+}
+
 /* House shape handles */
 .handles { position: fixed; inset: 0; z-index: 4; pointer-events: none; }
 .handle {
@@ -670,7 +724,8 @@ body.starting .brand, body.starting .panel, body.starting .toolbar {
     justify-content: space-between;
   }
   .toolbar .label-text { display: none; }
-  .toolbar button { padding: 0 12px; }
+  .toolbar { gap: 2px; }
+  .toolbar button, .toolbar .bar-toggle { padding: 0 9px; } /* eight buttons fit a phone row */
 }
 
 /* Elements toggled with the hidden attribute stay hidden even when a class sets display. */
