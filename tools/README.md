@@ -21,3 +21,5 @@ Fronts and roof extras can also be set in the address:
 - `_roofterrace.html` makes a roof terrace, drags a sun lounger onto it and logs whether it stands up there (`?style=modern` etc.).
 - `_water.html` paints a river from the edge and a pond with the water brush, then wipes part of it (`?start=night%3D1%26style%3Dbeach` etc.).
 - `_panel.html` collapses the controls panel at phone size and logs the camera before and after.
+- `_badge.html` puts a stand-in for the Netlify badge (159×36 px, 17 px from the corner) over the app, to check nothing sits under it (`?w=410&h=880`, `&collapse`).
+- `_tools.html` collapses the toolbar and logs the camera before and after (`?w=400&h=850` for a phone).

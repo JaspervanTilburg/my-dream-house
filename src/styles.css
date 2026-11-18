@@ -542,6 +542,8 @@ body.starting .zoom { opacity: 0; visibility: hidden; pointer-events: none; }
 /* The toolbar's own collapse button: the first button in the bar. Down on
    desktop (the bar sits at the bottom), up on phones (it sits at the top). */
 .toolbar .bar-toggle { padding: 0 10px; background: var(--accent); color: #fff; }
+/* Keep it purple when hovered or just tapped (phones keep the hover state). */
+.toolbar .bar-toggle:hover, .toolbar .bar-toggle:active, .toolbar .bar-toggle:focus { background: #a877ea; color: #fff; }
 .toolbar .bar-toggle svg { fill: none; stroke: currentColor; stroke-width: 3; transition: transform 0.2s; }
 .toolbar .bar-toggle span { display: none; }
 .toolbar.collapsed > :not(.bar-toggle) { display: none !important; }
@@ -648,7 +650,8 @@ body.starting .zoom { opacity: 0; visibility: hidden; pointer-events: none; }
   text-wrap: balance;
   text-shadow: 0 4px 0 #fff, 0 10px 30px rgba(185, 138, 240, 0.35);
 }
-.start-go {
+.start-buttons { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+.start-btn {
   min-width: 220px;
   height: 64px;
   padding: 0 40px;
@@ -665,11 +668,14 @@ body.starting .zoom { opacity: 0; visibility: hidden; pointer-events: none; }
   transition: transform 0.08s ease, box-shadow 0.08s ease;
   animation: start-bob 2.4s ease-in-out infinite;
 }
-.start-go:hover { background: #a877ea; }
-.start-go:active { transform: translateY(4px); box-shadow: 0 2px 0 #8f62d1, 0 8px 20px rgba(143, 98, 209, 0.3); animation: none; }
-.start-go:focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; }
+.start-btn:hover { background: #a877ea; }
+.start-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #8f62d1, 0 8px 20px rgba(143, 98, 209, 0.3); animation: none; }
+.start-btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; }
+/* New is the quieter choice next to Continue. */
+.start-new { min-width: 150px; background: #fff; color: var(--accent); box-shadow: 0 6px 0 #e0d2f5, 0 16px 34px rgba(143, 98, 209, 0.2); animation: none; }
+.start-new:hover { background: #f8f3fe; }
 @keyframes start-bob { 50% { transform: translateY(-5px); } }
-@media (prefers-reduced-motion: reduce) { .start-go { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .start-btn { animation: none; } }
 
 /* While the start screen shows, the game's controls wait out of sight. */
 .brand, .panel, .toolbar { transition: opacity 0.5s ease 0.35s, visibility 0s linear 0s; }
@@ -730,3 +736,80 @@ body.starting .brand, body.starting .panel, body.starting .toolbar {
 
 /* Elements toggled with the hidden attribute stay hidden even when a class sets display. */
 [hidden] { display: none !important; }
+
+/* ---------------------------------------------------------------------------
+   Layout. Keeps the bottom-right corner free (the host shows its logo there).
+   Desktop: controls on the left, title top right, zoom middle right, toolbar
+   at the bottom. Phone: controls at the bottom (lifted above that corner),
+   toolbar down the right side, zoom on the left, title bottom left.
+   --------------------------------------------------------------------------- */
+.panel { right: auto; left: max(16px, env(safe-area-inset-left, 0px)); }
+.brand { left: auto; right: max(16px, env(safe-area-inset-right, 0px)); }
+.zoom {
+  left: auto;
+  right: max(16px, env(safe-area-inset-right, 0px));
+  bottom: auto;
+  top: 50%;
+  transform: translateY(-50%);
+}
+@media (min-width: 641px) {
+  .panel-toggle svg { transform: rotate(90deg); }              /* points left: slides away to the left */
+  .panel.collapsed .panel-toggle svg { transform: rotate(-90deg); }
+}
+@media (max-width: 640px) {
+  .panel {
+    left: max(16px, env(safe-area-inset-left, 0px));
+    right: max(16px, env(safe-area-inset-right, 0px));
+    bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+  }
+  .panel.collapsed { left: max(16px, env(safe-area-inset-left, 0px)); right: auto; }
+  .brand {
+    top: auto;
+    right: auto;
+    left: max(16px, env(safe-area-inset-left, 0px));
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    padding: 8px 14px 9px;
+    border-radius: 14px;
+  }
+  .brand h1 { font-size: 1.15rem; }
+  .toolbar {
+    left: auto;
+    right: max(16px, env(safe-area-inset-right, 0px));
+    top: calc(16px + env(safe-area-inset-top, 0px));
+    bottom: auto;
+    transform: none;
+    flex-direction: column;
+    justify-content: flex-start;
+    border-radius: 26px;
+  }
+  .toolbar button, .toolbar .bar-toggle { width: 40px; padding: 0; justify-content: center; }
+  .toolbar.collapsed { left: auto; right: max(16px, env(safe-area-inset-right, 0px)); }
+  .toolbar.collapsed .bar-toggle { width: auto; padding: 0 14px 0 10px; }
+  .zoom {
+    right: auto;
+    left: max(16px, env(safe-area-inset-left, 0px));
+    top: calc(16px + env(safe-area-inset-top, 0px));
+    transform: none;
+  }
+}
+
+/* The host's badge in the bottom-right corner: about 160 x 36 px, 17 px from
+   the right and bottom edges (measured on a phone). Things at the bottom stay
+   clear of it. */
+:root { --badge-w: 176px; --badge-h: 53px; }
+/* Desktop toolbar: centred on wide screens; on narrower ones centred in the
+   gap between the controls panel (288 px) and the badge, icons only when
+   tight, and lifted above the badge when even that does not fit. */
+@media (min-width: 641px) and (max-width: 1299px) {
+  .toolbar { left: calc(50% + 48px); }
+}
+@media (min-width: 641px) and (max-width: 1185px) {
+  .toolbar .label-text { display: none; }
+  .toolbar button { padding: 0 11px; }
+}
+@media (min-width: 641px) and (max-width: 889px) {
+  .toolbar { left: calc(50% + 136px); bottom: calc(var(--badge-h) + 12px); }
+}
+@media (max-width: 640px) {
+  .panel { bottom: calc(var(--badge-h) + 14px + env(safe-area-inset-bottom, 0px)); }
+}

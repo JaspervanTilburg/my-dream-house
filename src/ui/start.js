@@ -10,7 +10,6 @@ import { fitCamera, placeCamera, setStartFrame, view } from '../scene.js';
 // background. Start swings the view back to the front and brings in the controls.
 // ---------------------------------------------------------------------------
 const screen = document.getElementById('start');
-const go = document.getElementById('start-go');
 let starting = document.body.classList.contains('starting');
 
 export const isStarting = () => starting;
@@ -51,17 +50,34 @@ function finish(animate) {
   });
 }
 
-go.addEventListener('click', () => {
+// First visit: just Start (the basic house is already there). Coming back:
+// Continue (the house from last time) or New (back to the basic house).
+const mainBtn = document.getElementById('start-main');
+const newBtn = document.getElementById('start-new');
+
+export function setupStart(returning) {
+  if (returning) {
+    mainBtn.textContent = 'Continue';
+    newBtn.hidden = false;
+  }
+  // Tests (and anyone who adds ?skipstart to the address) go straight to the game.
+  const params = new URLSearchParams(location.search);
+  if (starting && (params.has('debug') || params.has('skipstart'))) finish(false);
+  else if (starting) {
+    setAngle(-0.7);
+    mainBtn.focus({ preventScroll: true });
+  }
+}
+
+mainBtn.addEventListener('click', () => {
   if (!starting) return;
   sfx.chime();
-  resetScene(); // every game starts from the basic one-room cottage
   finish(true);
 });
 
-// Tests (and anyone who adds ?skipstart to the address) go straight to the game.
-const params = new URLSearchParams(location.search);
-if (starting && (params.has('debug') || params.has('skipstart'))) finish(false);
-else if (starting) {
-  setAngle(-0.7);
-  go.focus({ preventScroll: true });
-}
+newBtn.addEventListener('click', () => {
+  if (!starting) return;
+  sfx.chime();
+  resetScene(); // the basic one-room cottage
+  finish(true);
+});

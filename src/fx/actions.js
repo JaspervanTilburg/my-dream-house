@@ -14,16 +14,21 @@ import { resetZoom } from '../scene.js';
 
 // Reset: back to a plain starting scene. A one-room cottage, tall walls, no
 // greenery, no water and an empty garden.
-export function resetScene() {
-  select(null);
+// The basic house, as plain settings (used before the first build, too).
+export function resetState() {
   const st = STYLES.cottage;
   Object.assign(state, {
     style: 'cottage', cells: ['0,0'], doorCol: null,
     fronts: {}, sides: { '0,0,right': 'window' }, roofs: {},
     size: 1.05, height: 1.4, greenery: 0,
     wallColor: st.wall, roofColor: st.roofColor,
-    extras: { fence: false }, items: [],
+    extras: { fence: false }, items: [], water: [], night: false,
   });
+}
+
+export function resetScene() {
+  select(null);
+  resetState();
   setWater([]);
   setNight(false);
   syncControls();

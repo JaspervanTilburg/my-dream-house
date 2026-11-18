@@ -1,0 +1,18 @@
+<!doctype html><html><body style="margin:0">
+<iframe id="f" src="/index.html?debug" style="border:0"></iframe>
+<div id="log" style="position:fixed;left:8px;bottom:8px;font:12px monospace;color:#b00;background:#fff"></div>
+<script>
+// Collapses the toolbar and logs the camera before and after (?w=400&h=850 for a phone).
+const q = new URLSearchParams(location.search);
+const f = document.getElementById('f');
+f.style.width = (q.get('w') || 1400) + 'px'; f.style.height = (q.get('h') || 900) + 'px';
+const log = m => { document.getElementById('log').textContent += ' | ' + m; };
+f.addEventListener('load', () => setTimeout(() => {
+  const w = f.contentWindow, dh = w.__dreamHouse;
+  const cam = () => ['left', 'right', 'top', 'bottom'].map(k => dh.camera[k].toFixed(2)).join(' ');
+  log('open: ' + cam());
+  const t = w.document.getElementById('toolbar-toggle'); log('toggle=' + !!t + ' ' + t?.tagName + ' in=' + t?.parentElement?.id);
+  t.click();
+  setTimeout(() => { dh.gsap.globalTimeline.getChildren(true, true, false).forEach(t => t.progress(1)); dh.fitCamera(false); log('collapsed: ' + cam() + ' cls=' + w.document.getElementById('toolbar').className + ' tbLeft=' + w.document.getElementById('toolbar').getBoundingClientRect().left.toFixed(0)); }, 500);
+}, 5000));
+</script></body></html>

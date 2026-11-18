@@ -1,4 +1,4 @@
-// Dream House: entry point. Importing a module runs its setup; the ones
+// My Dream House: entry point. Importing a module runs its setup; the ones
 // below without names only register their buttons and listeners.
 import './styles.css';
 import './fx/audio.js';
@@ -10,7 +10,8 @@ import './ui/panel.js';
 import './fx/flyers.js';
 import { redrawWater, waterTick } from './water.js';
 import { setWater } from './waterdata.js';
-import { startTick } from './ui/start.js';
+import { setupStart, startTick } from './ui/start.js';
+import { resetState } from './fx/actions.js';
 import { nightTick, setNight } from './fx/night.js';
 import { DEFAULT_ITEMS } from './catalog.js';
 import { select } from './items.js';
@@ -27,7 +28,7 @@ import { getHouse, live, update, world } from './world.js';
 
 // Test hook: with ?debug in the address, automated tests can find things on screen.
 // ?test does the same but keeps the start screen.
-if (['debug', 'test'].some(k => new URLSearchParams(location.search).has(k))) window.__dreamHouse = { live, camera, world, state, gsap, house: getHouse };
+if (['debug', 'test'].some(k => new URLSearchParams(location.search).has(k))) window.__dreamHouse = { live, camera, world, state, gsap, house: getHouse, fitCamera };
 
 // "Clear all items" removes every shop item (the mailbox too; it is in the Sets tab).
 document.getElementById('reset-garden').addEventListener('click', () => {
@@ -37,8 +38,12 @@ document.getElementById('reset-garden').addEventListener('click', () => {
 });
 
 // Start from the default garden, then whatever she saved last time.
+// The design from the last visit, or the basic house on a first visit (the
+// app saves every change by itself, so there is no save button).
 state.items = DEFAULT_ITEMS.map(it => ({ ...it }));
-loadDesign();
+const returning = loadDesign();
+if (!returning) resetState();
+setupStart(returning);
 
 // Optional start values from the address, e.g. index.html?rooms=4&floors=3
 const params = new URLSearchParams(location.search);

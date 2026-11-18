@@ -12,10 +12,11 @@ export function saveDesign() {
     localStorage.setItem('dream-house', JSON.stringify(Object.fromEntries(SAVED_KEYS.map(k => [k, state[k]]))));
   } catch { /* not saved; nothing else to do */ }
 }
+// Returns true when a design from an earlier visit was found and loaded.
 export function loadDesign() {
   let saved = null;
-  try { saved = JSON.parse(localStorage.getItem('dream-house')); } catch { return; }
-  if (!saved || !STYLES[saved.style]) return;
+  try { saved = JSON.parse(localStorage.getItem('dream-house')); } catch { return false; }
+  if (!saved || !STYLES[saved.style]) return false;
   const inRange = (v, min, max) => typeof v === 'number' && v >= min && v <= max;
   const isColor = (v, key) => SWATCHES[key].some(([c]) => c === v) || Object.values(STYLES).some(st =>
     (key === 'wallColor' ? st.wall : st.roofColor) === v);
@@ -80,4 +81,5 @@ export function loadDesign() {
   state.style = saved.style;
   if (isColor(saved.wallColor, 'wallColor')) state.wallColor = saved.wallColor;
   if (isColor(saved.roofColor, 'roofColor')) state.roofColor = saved.roofColor;
+  return true;
 }

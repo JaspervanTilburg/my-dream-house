@@ -167,14 +167,19 @@ export function fitCamera(animate = false) {
 function gameFree(w, h, pad) {
   const free = { x0: pad, x1: w - pad, y0: pad, y1: h - pad };
   const panel = document.getElementById('panel').getBoundingClientRect();
-  const brand = document.querySelector('.brand').getBoundingClientRect();
-  const toolbar = document.getElementById('toolbar').getBoundingClientRect();
+  const toolbarEl = document.getElementById('toolbar');
+  const toolbar = toolbarEl.getBoundingClientRect();
+  const toolsOpen = !toolbarEl.classList.contains('collapsed'); // collapsed, it is a small pill in a corner
+  const zoom = document.getElementById('zoom').getBoundingClientRect();
   if (window.matchMedia('(max-width: 640px)').matches) {
+    // Controls at the bottom, toolbar down the right side.
     free.y1 = panel.top - pad;
-    free.y0 = Math.max(brand.bottom, toolbar.bottom) + pad;
+    if (toolsOpen) free.x1 = toolbar.left - pad / 2;
   } else {
-    free.x1 = panel.left - pad;
-    free.y1 = toolbar.top - 8;
+    // Controls on the left, zoom buttons on the right, toolbar at the bottom.
+    free.x0 = panel.right + pad;
+    free.x1 = zoom.left - pad;
+    free.y1 = toolsOpen ? toolbar.top - 8 : h - 70;
   }
   return free;
 }

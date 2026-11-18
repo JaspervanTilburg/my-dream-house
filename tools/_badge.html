@@ -1,0 +1,10 @@
+<!doctype html><html><body style="margin:0;position:relative">
+<iframe id="f" src="/index.html?debug" style="border:0;display:block"></iframe>
+<div style="position:absolute;right:17px;bottom:17px;width:159px;height:36px;border-radius:18px;background:rgba(10,30,40,.85);color:#fff;font:600 13px system-ui;display:flex;align-items:center;justify-content:center">Powered by Netlify</div>
+<script>
+// A stand-in for the host's badge (size measured from a phone screenshot) over the app.
+const q = new URLSearchParams(location.search);
+const f = document.getElementById('f');
+f.style.width = (q.get('w') || 400) + 'px'; f.style.height = (q.get('h') || 850) + 'px';
+if (q.has('collapse')) f.addEventListener('load', () => setTimeout(() => f.contentWindow.document.getElementById('panel-toggle').click(), 4000));
+</script></body></html>

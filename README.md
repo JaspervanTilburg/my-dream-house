@@ -1,4 +1,4 @@
-# Dream House
+# My Dream House
 
 A playful isometric house designer for Charlotte & Thomas, built with Three.js, GSAP and Vite.
 

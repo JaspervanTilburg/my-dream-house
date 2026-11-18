@@ -1,0 +1,10 @@
+<!doctype html><html><body style="margin:0">
+<iframe id="f" style="width:1400px;height:900px;border:0"></iframe>
+<script>
+// ?first: no saved design (a first visit). ?back: a saved barn design (coming back).
+const q = new URLSearchParams(location.search);
+if (q.has('first')) localStorage.removeItem('dream-house');
+if (q.has('back')) localStorage.setItem('dream-house', JSON.stringify({ style: 'barn', cells: ['0,0', '1,0', '1,1'],
+  size: 1, height: 1, greenery: 0.8, wallColor: '#d96a55', roofColor: '#6f7fa8', items: [], water: [] }));
+document.getElementById('f').src = '/index.html?test';
+</script></body></html>
