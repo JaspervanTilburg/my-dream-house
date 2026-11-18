@@ -1,0 +1,38 @@
+<!doctype html><html><body style="margin:0">
+<iframe id="f" style="width:1400px;height:900px;border:0"></iframe>
+<div id="log" style="position:fixed;left:8px;bottom:8px;font:13px monospace;color:#b00;background:#fff;max-width:1300px"></div>
+<script>
+// Zooms in with the buttons and the wheel, pans by dragging the lawn, then taps the house.
+const f = document.getElementById('f');
+f.src = '/index.html?debug';
+const log = m => { document.getElementById('log').textContent += ' | ' + m; };
+const wait = ms => new Promise(r => setTimeout(r, ms));
+f.addEventListener('load', async () => {
+  const w = f.contentWindow, doc = w.document;
+  w.addEventListener('error', e => log('ERR ' + e.message));
+  await wait(5000);
+  const dh = w.__dreamHouse;
+  dh.gsap.globalTimeline.getChildren(true, true, false).forEach(t => t.progress(1));
+  const canvas = doc.querySelector('#stage canvas');
+  const width = () => (dh.camera.right - dh.camera.left).toFixed(2);
+  log('start width ' + width());
+  doc.getElementById('zoom-in').click(); doc.getElementById('zoom-in').click();
+  log('after 2x + ' + width());
+  canvas.dispatchEvent(new w.WheelEvent('wheel', { deltaY: -200, clientX: 500, clientY: 450, bubbles: true, cancelable: true }));
+  log('after wheel ' + width());
+  const fire = (type, x, y) => canvas.dispatchEvent(new w.PointerEvent(type, { clientX: x, clientY: y, pointerId: 3, pointerType: 'mouse', button: 0, bubbles: true }));
+  const left0 = dh.camera.left;
+  fire('pointerdown', 160, 590);
+  for (let i = 1; i <= 8; i++) { fire('pointermove', 160 + i * 20, 590 - i * 10); await wait(20); }
+  fire('pointerup', 320, 510);
+  log('panned by ' + (left0 - dh.camera.left).toFixed(2) + ' chooser open=' + !doc.getElementById('room-bar').hidden);
+  await wait(300);
+  const roof = dh.live.get('roof-main').obj, v = roof.getWorldPosition(new roof.position.constructor());
+  v.add(new roof.position.constructor(0.5, -1.2, 1.4)).project(dh.camera);
+  const r = canvas.getBoundingClientRect(), x = (v.x + 1) / 2 * r.width, y = (1 - v.y) / 2 * r.height;
+  fire('pointerdown', x, y); fire('pointerup', x, y);
+  await wait(300);
+  log('tap house: chooser "' + doc.getElementById('room-bar-title').textContent + '" open=' + !doc.getElementById('room-bar').hidden);
+  log('done');
+});
+</script></body></html>

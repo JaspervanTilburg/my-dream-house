@@ -1,0 +1,7 @@
+<!doctype html><html><body style="margin:0"><iframe id="f" style="width:1400px;height:900px;border:0"></iframe>
+<script>
+// Saves a design in the format used before room blocks, then opens the app (no ?debug, so it loads it).
+localStorage.setItem('dream-house', JSON.stringify({ style: 'barn', rooms: 3, floors: 2, size: 1, height: 1, greenery: 0.5,
+  garage: false, wallColor: '#d96a55', roofColor: '#6f7fa8', extras: { picnic: true, bench: true, veggies: true, fence: false } }));
+document.getElementById('f').src = '/index.html?skipstart';
+</script></body></html>

@@ -1,0 +1,5 @@
+node_modules/
+dist/
+.DS_Store
+# Reference material (screenshots, downloaded asset packs); not part of the site.
+resources/

@@ -1,0 +1,63 @@
+<!doctype html><html><body style="margin:0">
+<iframe id="f" style="width:1400px;height:900px;border:0"></iframe>
+<div id="log" style="position:fixed;left:8px;bottom:8px;font:13px monospace;color:#b00;background:#fff;max-width:1300px"></div>
+<script>
+// Taps rooms and roofs in index.html, picks options in the chooser, and logs the result.
+const q = new URLSearchParams(location.search);
+const f = document.getElementById('f');
+f.style.width = (q.get('w') || 1400) + 'px'; f.style.height = (q.get('h') || 900) + 'px';
+f.src = '/index.html?debug&cells=' + encodeURIComponent(q.get('cells') || '0,0;1,0;2,0;0,1;1,1');
+const log = m => { document.getElementById('log').textContent += ' | ' + m; };
+const wait = ms => new Promise(r => setTimeout(r, ms));
+f.addEventListener('load', async () => {
+  const w = f.contentWindow;
+  w.addEventListener('error', e => log('ERR ' + e.message));
+  await wait(5000);
+  const dh = w.__dreamHouse, doc = w.document;
+  const finish = () => dh.gsap.globalTimeline.getChildren(true, true, false).forEach(t => t.progress(1));
+  finish(); await wait(200);
+  const canvas = doc.querySelector('#stage canvas');
+  const fire = (type, x, y) => canvas.dispatchEvent(new w.PointerEvent(type, { clientX: x, clientY: y, pointerId: 5, pointerType: 'mouse', button: 0, bubbles: true }));
+  const V = dh.camera.position.constructor;
+  const g = () => dh.house().geom;
+  const tapWorld = async (x, y, z) => {
+    const v = new V(x, y, z).add(dh.world.position).project(dh.camera);
+    const r = canvas.getBoundingClientRect();
+    const sx = (v.x + 1) / 2 * r.width, sy = (1 - v.y) / 2 * r.height;
+    fire('pointerdown', sx, sy); fire('pointerup', sx, sy);
+    await wait(300);
+  };
+  const tapRoom = (c, fl) => tapWorld(g().colX(c) + 0.5, g().floorY(fl) + g().floorH * 0.25, g().z + g().depth / 2 + 0.05);
+  const tapRoof = c => tapWorld(g().colX(c), g().floorY(dh.state.cells.filter(k => +k.split(',')[0] === c).length) + 0.5, g().z);
+  const bar = () => doc.getElementById('room-bar');
+  const choose = async id => { { const b = doc.getElementById('room-opt-' + id); if (b) b.click(); else log('no option ' + id); } await wait(300); finish(); await wait(200); };
+  const state = () => JSON.stringify({ fronts: dh.state.fronts, roofs: dh.state.roofs, door: dh.house().doorCol });
+  log('start ' + state());
+  if (q.has('side')) {
+    const G = g();
+    await tapWorld(G.colX(2) + G.module / 2 + 0.01, G.floorY(0) + G.floorH * 0.3, G.z + 0.9);
+    log('side tap: "' + doc.getElementById('room-bar-title').textContent + '" opts=' + [...doc.querySelectorAll('.room-opt')].map(b => b.id.slice(9)).join(','));
+    await choose('double');
+    log('sides ' + JSON.stringify(dh.state.sides));
+    return log('done');
+  }
+  await tapRoom(2, 0);
+  log('tap 2,0: bar=' + !bar().hidden + ' "' + doc.getElementById('room-bar-title').textContent + '" opts=' + doc.querySelectorAll('.room-opt').length);
+  await choose('bay');
+  await tapRoom(0, 1);
+  log('tap 0,1: "' + doc.getElementById('room-bar-title').textContent + '" bay offered=' + !!doc.getElementById('room-opt-bay') + ' balcony offered=' + !!doc.getElementById('room-opt-balcony'));
+  await choose('balcony');
+  await tapRoof(0);
+  log('roof: "' + doc.getElementById('room-bar-title').textContent + '"');
+  await choose('dormer');
+  const door = dh.house().doorCol;
+  await tapRoom(door, 0);
+  await choose('garage');
+  log('door room -> garage: ' + state());
+  await tapRoom(0, 0);
+  await choose('door');
+  log('door to 0,0: ' + state());
+  if (!q.has('keep')) { fire('pointerdown', 5, 5); fire('pointerup', 5, 5); await wait(200); }
+  log('done');
+});
+</script></body></html>

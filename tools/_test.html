@@ -1,0 +1,20 @@
+<!doctype html><html><body style="margin:0">
+<iframe id="f" src="" style="width:1400px;height:900px;border:0"></iframe>
+<div id="log" style="position:fixed;left:8px;bottom:8px;font:14px monospace;color:red;background:#fff"></div>
+<script>
+const q = new URLSearchParams(location.search);
+const clickAt = Number(q.get('at') || 2500);
+const f = document.getElementById('f'); f.style.width = (q.get('w') || 1400) + 'px'; f.style.height = (q.get('h') || 900) + 'px'; f.src = '/index.html?' + (q.has('raw') ? 'test' : 'debug') + (q.get('start') ? '&' + q.get('start') : ''); // raw: keep the start screen
+f.addEventListener('load', () => {
+  const w = f.contentWindow;
+  w.__dreamHouse?.gsap.ticker.lagSmoothing(0);
+  w.addEventListener('error', e => { log.textContent += ' ERR: ' + e.message; });
+  setTimeout(() => {
+    // Headless browsers render only a few frames; finish running animations first.
+    const g = w.__dreamHouse?.gsap;
+    if (g) g.globalTimeline.getChildren(true, true, false).forEach(t => t.progress(1));
+    (q.get('ids') || 'rooms-plus,rooms-plus,floors-plus').split(',').forEach(id => w.document.getElementById(id).click());
+    log.textContent += ' clicked';
+  }, clickAt);
+});
+</script></body></html>

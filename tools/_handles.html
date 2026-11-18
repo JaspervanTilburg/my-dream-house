@@ -1,0 +1,61 @@
+<!doctype html><html><body style="margin:0">
+<iframe id="f" style="width:1400px;height:900px;border:0"></iframe>
+<div id="log" style="position:fixed;left:8px;bottom:8px;font:13px monospace;color:#b00;background:#fff;max-width:1300px"></div>
+<script>
+// Drives the house handles in index.html with pointer events and logs the layout after each step.
+const q = new URLSearchParams(location.search);
+const f = document.getElementById('f');
+f.src = '/index.html?debug&cells=' + encodeURIComponent(q.get('cells') || '0,0;1,0');
+const log = m => { document.getElementById('log').textContent += ' | ' + m; };
+const wait = ms => new Promise(r => setTimeout(r, ms));
+f.addEventListener('load', async () => {
+  const w = f.contentWindow;
+  w.addEventListener('error', e => log('ERR ' + e.message));
+  await wait(5000);
+  const dh = w.__dreamHouse;
+  const finish = () => dh.gsap.globalTimeline.getChildren(true, true, false).forEach(t => t.progress(1));
+  finish();
+  const canvas = w.document.querySelector('#stage canvas');
+  const fire = (el, type, x, y) => el.dispatchEvent(new w.PointerEvent(type, { clientX: x, clientY: y, pointerId: 9, pointerType: 'mouse', button: 0, bubbles: true }));
+  const cells = () => dh.state.cells.slice().sort().join(' ');
+  // Tap the middle of the roof to show the handles.
+  const roof = dh.live.get('roof-main').obj, v = roof.getWorldPosition(new roof.position.constructor()); v.y += 0.5; v.project(dh.camera);
+  const r = canvas.getBoundingClientRect(), tx = (v.x + 1) / 2 * r.width, ty = (1 - v.y) / 2 * r.height;
+  log('tap ' + tx.toFixed(0) + ',' + ty.toFixed(0) + ' on ' + w.document.elementFromPoint(tx, ty)?.tagName + '#' + w.document.elementFromPoint(tx, ty)?.id);
+  fire(canvas, 'pointerdown', tx, ty); fire(canvas, 'pointerup', tx, ty);
+  await wait(300);
+  const handles = () => [...w.document.querySelectorAll('.handle')];
+  log('handles ' + handles().length + ' visible=' + !w.document.getElementById('handles').hidden);
+  const center = el => { const b = el.getBoundingClientRect(); return [b.left + b.width / 2, b.top + b.height / 2]; };
+  const dragHandle = async (pick, dx, dy) => {
+    const el = pick(handles()); if (!el) { log('no handle'); return; }
+    const [x, y] = center(el);
+    fire(el, 'pointerdown', x, y);
+    for (let i = 1; i <= 10; i++) { fire(el, 'pointermove', x + dx * i / 10, y + dy * i / 10); await wait(25); }
+    fire(el, 'pointerup', x + dx, y + dy);
+    await wait(400); finish(); await wait(300);
+  };
+  const rightmost = hs => hs.filter(h => h.classList.contains('handle-side')).sort((a, b) => center(b)[0] - center(a)[0] || center(b)[1] - center(a)[1])[0];
+  const tops = hs => hs.filter(h => h.classList.contains('handle-top')).sort((a, b) => center(a)[0] - center(b)[0]);
+  if (q.has('twice')) {
+    fire(canvas, 'pointerdown', 5, 450); fire(canvas, 'pointerup', 5, 450); await wait(300);
+    fire(canvas, 'pointerdown', tx, ty); fire(canvas, 'pointerup', tx, ty); await wait(300);
+    fire(canvas, 'pointerdown', 5, 450); fire(canvas, 'pointerup', 5, 450); await wait(300);
+    fire(canvas, 'pointerdown', tx, ty); fire(canvas, 'pointerup', tx, ty); await wait(300);
+    log('after 3 shows: ' + handles().length + ' buttons, expected ' + (2 * new Set(dh.state.cells.map(k => k.split(',')[1])).size + new Set(dh.state.cells.map(k => k.split(',')[0])).size));
+  }
+  log('start ' + cells());
+  if (q.has('only')) { await wait(1500); finish(); return log('shown'); }
+  await dragHandle(rightmost, 140, 70);           // ground floor one room to the right (iso: right-down)
+  log('wider ' + cells());
+  await dragHandle(hs => tops(hs)[0], 0, -200);   // leftmost column one floor up
+  log('taller ' + cells());
+  await dragHandle(hs => tops(hs)[1], 0, -200);   // second column up too
+  log('both ' + cells());
+  const groundRight = hs => hs.filter(h => h.classList.contains('handle-side')).sort((a, b) => center(b)[1] - center(a)[1] || center(b)[0] - center(a)[0])[0];
+  await dragHandle(groundRight, -140, -70);       // lowest right handle inward: a ground room goes, a terrace appears
+  log('terrace ' + cells());
+  if (q.has('shot')) return log('done');
+  log('done');
+});
+</script></body></html>

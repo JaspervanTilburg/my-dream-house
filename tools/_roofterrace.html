@@ -1,0 +1,50 @@
+<!doctype html><html><body style="margin:0">
+<iframe id="f" style="width:1400px;height:900px;border:0"></iframe>
+<div id="log" style="position:fixed;left:8px;bottom:8px;font:13px monospace;color:#b00;background:#fff;max-width:1300px"></div>
+<script>
+// Adds a sun lounger and drags it onto a roof terrace; logs where it ends up.
+const q = new URLSearchParams(location.search);
+const f = document.getElementById('f');
+f.src = '/index.html?debug&cells=0,0;1,0;0,1&roofs=1:terrace' + (q.get('style') ? '&style=' + q.get('style') : '');
+const log = m => { document.getElementById('log').textContent += ' | ' + m; };
+const wait = ms => new Promise(r => setTimeout(r, ms));
+f.addEventListener('load', async () => {
+  const w = f.contentWindow, doc = w.document;
+  w.addEventListener('error', e => log('ERR ' + e.message));
+  await wait(5000);
+  const dh = w.__dreamHouse;
+  const finish = () => dh.gsap.globalTimeline.getChildren(true, true, false).forEach(t => t.progress(1));
+  finish();
+  const t = dh.house().terraces[0];
+  log('terrace ' + (t ? `y=${t.y.toFixed(2)}` : 'missing'));
+  doc.getElementById('act-add').click(); doc.getElementById('shop-tab-furniture').click(); doc.getElementById('shop-item-lounger').click();
+  await wait(800); finish(); await wait(200);
+  const id = dh.state.items[dh.state.items.length - 1].id;
+  const canvas = doc.querySelector('#stage canvas');
+  const V = dh.camera.position.constructor;
+  const screen = v => { const p = v.clone().add(dh.world.position).project(dh.camera); const r = canvas.getBoundingClientRect(); return [(p.x + 1) / 2 * r.width + r.left, (1 - p.y) / 2 * r.height + r.top]; };
+  const fire = (type, x, y) => canvas.dispatchEvent(new w.PointerEvent(type, { clientX: x, clientY: y, pointerId: 4, pointerType: 'mouse', button: 0, bubbles: true }));
+  const obj = dh.live.get('item-' + id).obj;
+  const [sx, sy] = screen(obj.position.clone().add(new V(0, 0.3, 0)));
+  const [tx, ty] = screen(new V((t.x0 + t.x1) / 2, t.y, (t.z0 + t.z1) / 2));
+  fire('pointerdown', sx, sy);
+  for (let i = 1; i <= 12; i++) { fire('pointermove', sx + (tx - sx) * i / 12, sy + (ty - sy) * i / 12); await wait(25); }
+  fire('pointerup', tx, ty);
+  await wait(600); finish(); await wait(300);
+  const it = dh.state.items.find(i => i.id === id), o = dh.live.get('item-' + id).obj;
+  log(`lounger onRoof=${it.onRoof} y=${o.position.y.toFixed(2)}`);
+  // Drag it again, now from the roof to another spot on the same deck.
+  const o2 = dh.live.get('item-' + id).obj;
+  const [ax, ay] = screen(o2.position.clone().add(new V(0, 0.3, 0)));
+  const [bx, by] = screen(new V(t.x0 + 0.5, t.y, t.z0 + 0.6));
+  fire('pointerdown', ax, ay);
+  for (let i = 1; i <= 12; i++) { fire('pointermove', ax + (bx - ax) * i / 12, ay + (by - ay) * i / 12); await wait(25); }
+  fire('pointerup', bx, by);
+  await wait(600); finish(); await wait(300);
+  const o3 = dh.live.get('item-' + id).obj;
+  log(`moved on roof: onRoof=${dh.state.items.find(i => i.id === id).onRoof} x=${o3.position.x.toFixed(2)} z=${o3.position.z.toFixed(2)} y=${o3.position.y.toFixed(2)} (deck x ${t.x0.toFixed(2)}..${t.x1.toFixed(2)})`);
+  doc.getElementById('act-add').click(); doc.getElementById('shop-tab-plants').click(); doc.getElementById('shop-item-pottedPlant').click();
+  await wait(800); finish();
+  log('done');
+});
+</script></body></html>

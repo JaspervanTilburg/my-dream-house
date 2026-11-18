@@ -1,0 +1,51 @@
+<!doctype html><html><body style="margin:0">
+<iframe id="f" style="width:1400px;height:900px;border:0"></iframe>
+<div id="log" style="position:fixed;left:8px;bottom:8px;font:13px monospace;color:#b00;background:#fff;max-width:900px"></div>
+<script>
+// Drives drag-and-drop in index.html: drag picnic to front-left, drop bench on the house (should bounce back), tap mailbox.
+const q = new URLSearchParams(location.search);
+const f = document.getElementById('f');
+f.src = '/index.html?debug&extras=picnic,bench' + (q.get('extra') || '');
+const log = m => { document.getElementById('log').textContent += ' | ' + m; };
+const wait = ms => new Promise(r => setTimeout(r, ms));
+f.addEventListener('load', async () => {
+  const w = f.contentWindow;
+  w.addEventListener('error', e => log('ERR ' + e.message));
+  await wait(7000);
+  const dh = w.__dreamHouse;
+  // Headless browsers render only a few frames; finish running animations first.
+  dh.gsap.globalTimeline.getChildren(true, true, false).forEach(t => t.progress(1));
+  const canvas = w.document.querySelector('#stage canvas');
+  const screenOf = id => {
+    const o = dh.live.get(id).obj;
+    const v = o.getWorldPosition(new o.position.constructor());
+    v.project(dh.camera);
+    const r = canvas.getBoundingClientRect();
+    return [(v.x + 1) / 2 * r.width + r.left, (1 - v.y) / 2 * r.height + r.top];
+  };
+  const fire = (type, x, y) => canvas.dispatchEvent(new w.PointerEvent(type, { clientX: x, clientY: y, pointerId: 7, pointerType: 'mouse', button: 0, bubbles: true }));
+  const dragTo = async (id, tx, ty) => {
+    const [x, y] = screenOf(id);
+    fire('pointerdown', x, y - 8);
+    for (let i = 1; i <= 12; i++) { fire('pointermove', x + (tx - x) * i / 12, y - 8 + (ty - y) * i / 12); await wait(30); }
+    fire('pointerup', tx, ty);
+    await wait(1200);
+  };
+  const screenOfPoint = (x, z) => {
+    const v = new dh.camera.position.constructor(x, 0, z).add(dh.world.position).project(dh.camera);
+    const r = canvas.getBoundingClientRect();
+    return [(v.x + 1) / 2 * r.width + r.left, (1 - v.y) / 2 * r.height + r.top];
+  };
+  const pos = id => { const o = dh.live.get(id)?.obj; return o ? `${o.position.x.toFixed(2)},${o.position.z.toFixed(2)} r${(o.rotation.y / (Math.PI / 2)).toFixed(1)}` : 'missing'; };
+  log('scale ' + dh.live.get('item-2').obj.scale.x.toFixed(2) + ' frames ' + dh.gsap.ticker.frame);
+  log('start bench ' + pos('item-3') + ' picnic ' + pos('item-2'));
+  await dragTo('item-3', ...screenOfPoint(1.1, 0.9));
+  log('bench to front wall -> ' + pos('item-3'));
+  await dragTo('item-2', ...screenOfPoint(0.5, -1.8));
+  log('picnic dropped on house -> ' + pos('item-2'));
+  await dragTo('item-1', ...screenOfPoint(-3.5, -3.5));
+  log('mailbox to back corner -> ' + pos('item-1'));
+  if (q.get('grow')) { w.document.getElementById('rooms-plus').click(); w.document.getElementById('rooms-plus').click(); w.document.getElementById('garage').click(); await wait(1500); log('after grow picnic ' + pos('item-2') + ' bench ' + pos('item-3')); }
+  log('done');
+});
+</script></body></html>

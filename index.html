@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dream House</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@500;700&display=swap">
+</head>
+<body class="starting">
+<div id="night-sky" aria-hidden="true"></div>
+<div id="scenery" aria-hidden="true">
+  <svg class="hills" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice">
+    <defs>
+      <linearGradient id="haze" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="var(--haze)" stop-opacity="0"/>
+        <stop offset="1" stop-color="var(--haze)" stop-opacity="0.85"/>
+      </linearGradient>
+    </defs>
+    <path class="hill-far" d="M0 700 C 160 620 300 640 430 660 C 560 600 700 590 840 640 C 980 600 1120 580 1260 630 C 1380 600 1500 610 1600 640 V900 H0Z"/>
+    <path class="hill-mid" d="M0 760 C 140 700 280 720 400 745 C 540 700 690 705 820 740 C 960 700 1110 690 1240 735 C 1370 705 1500 715 1600 735 V900 H0Z"/>
+    <g class="hill-trees">
+      <circle cx="210" cy="712" r="14"/><circle cx="232" cy="716" r="10"/>
+      <circle cx="610" cy="702" r="12"/><circle cx="1090" cy="696" r="15"/><circle cx="1112" cy="702" r="10"/>
+      <circle cx="1440" cy="712" r="12"/>
+    </g>
+    <path class="hill-near" d="M0 830 C 180 780 330 795 470 815 C 640 780 800 790 960 812 C 1120 785 1300 785 1600 815 V900 H0Z"/>
+    <rect x="0" y="560" width="1600" height="340" fill="url(#haze)"/>
+  </svg>
+  <!-- Tiny floating islands far away, each with a tree -->
+  <svg class="mini" style="left:9%;top:22%;width:90px" viewBox="0 0 90 70">
+    <path class="mini-dirt" d="M8 30 H82 L62 64 H28 Z"/><rect class="mini-grass" x="4" y="22" width="82" height="12" rx="6"/>
+    <rect class="mini-trunk" x="40" y="6" width="6" height="18" rx="2"/><circle class="mini-leaf" cx="43" cy="8" r="12"/>
+  </svg>
+  <svg class="mini slow" style="left:74%;top:16%;width:64px" viewBox="0 0 90 70">
+    <path class="mini-dirt" d="M8 30 H82 L62 64 H28 Z"/><rect class="mini-grass" x="4" y="22" width="82" height="12" rx="6"/>
+    <path class="mini-leaf" d="M30 24 L42 0 L54 24 Z"/>
+  </svg>
+  <svg class="mini" style="left:38%;top:7%;width:48px;opacity:.7" viewBox="0 0 90 70">
+    <path class="mini-dirt" d="M8 30 H82 L62 64 H28 Z"/><rect class="mini-grass" x="4" y="22" width="82" height="12" rx="6"/>
+    <circle class="mini-leaf" cx="34" cy="14" r="10"/><circle class="mini-leaf" cx="54" cy="16" r="8"/>
+  </svg>
+  <div class="flyers" id="flyers"></div>
+</div>
+<div id="stage"></div>
+<section class="start" id="start" aria-labelledby="start-title">
+  <div class="start-title" id="start-title">
+    <p class="start-for">for Charlotte &amp; Thomas</p>
+    <h1>Dream House</h1>
+  </div>
+  <button type="button" class="start-go" id="start-go">Start</button>
+</section>
+<header class="brand">
+  <h1>Dream House</h1>
+  <p id="brand-home">Charlotte &amp; Thomas</p>
+</header>
+<aside class="panel" id="panel" aria-label="House controls">
+  <div class="tabs" role="tablist" aria-label="Control groups">
+    <button type="button" role="tab" id="tab-house" aria-controls="group-house" aria-selected="true">House</button>
+    <button type="button" role="tab" id="tab-shape" aria-controls="group-shape" aria-selected="false">Shape</button>
+    <button type="button" role="tab" id="tab-colors" aria-controls="group-colors" aria-selected="false">Colors</button>
+    <button type="button" role="tab" id="tab-garden" aria-controls="group-garden" aria-selected="false">Garden</button>
+  </div>
+  <div class="group active" id="group-house" role="tabpanel" aria-labelledby="tab-house">
+    <section class="ctrl wide">
+      <span class="label" id="style-label">Style</span>
+      <div class="chips" id="style-chips" role="radiogroup" aria-labelledby="style-label"></div>
+    </section>
+    <section class="ctrl">
+      <span class="label" id="rooms-label">Rooms</span>
+      <div class="stepper" role="group" aria-labelledby="rooms-label">
+        <button type="button" id="rooms-minus" data-key="rooms" data-step="-1" aria-label="Remove a room">−</button>
+        <output id="rooms-value" aria-live="polite">2</output>
+        <button type="button" id="rooms-plus" data-key="rooms" data-step="1" aria-label="Add a room">+</button>
+      </div>
+    </section>
+    <section class="ctrl">
+      <span class="label" id="floors-label">Floors</span>
+      <div class="stepper" role="group" aria-labelledby="floors-label">
+        <button type="button" id="floors-minus" data-key="floors" data-step="-1" aria-label="Remove a floor">−</button>
+        <output id="floors-value" aria-live="polite">1</output>
+        <button type="button" id="floors-plus" data-key="floors" data-step="1" aria-label="Add a floor">+</button>
+      </div>
+    </section>
+  </div>
+  <div class="group" id="group-shape" role="tabpanel" aria-labelledby="tab-shape">
+    <section class="ctrl">
+      <label class="label" for="size">Size</label>
+      <input type="range" id="size" data-key="size" min="0.8" max="1.3" step="0.05" value="1">
+    </section>
+    <section class="ctrl">
+      <label class="label" for="height">Height</label>
+      <input type="range" id="height" data-key="height" min="0.8" max="1.4" step="0.05" value="1">
+    </section>
+  </div>
+  <div class="group" id="group-colors" role="tabpanel" aria-labelledby="tab-colors">
+    <section class="ctrl wide">
+      <span class="label" id="wall-label">Walls</span>
+      <div class="swatches" id="wallColor-swatches" role="radiogroup" aria-labelledby="wall-label"></div>
+    </section>
+    <section class="ctrl wide">
+      <span class="label" id="roof-label">Roof</span>
+      <div class="swatches" id="roofColor-swatches" role="radiogroup" aria-labelledby="roof-label"></div>
+    </section>
+  </div>
+  <div class="group" id="group-garden" role="tabpanel" aria-labelledby="tab-garden">
+    <section class="ctrl wide">
+      <label class="label" for="greenery">Greenery</label>
+      <input type="range" id="greenery" data-key="greenery" min="0" max="1" step="0.05" value="0.5">
+    </section>
+    <section class="ctrl wide">
+      <button type="button" class="add-btn" id="act-add">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        Shop items
+      </button>
+      <p class="tip">Drag things to move them. Tap one to turn, copy or delete it.</p>
+    </section>
+    <section class="ctrl wide">
+      <span class="label" id="water-label">Water</span>
+      <div class="chips" role="group" aria-labelledby="water-label">
+        <button type="button" class="chip" id="water-paint" aria-pressed="false">Paint water</button>
+        <button type="button" class="chip" id="water-erase" aria-pressed="false">Remove water</button>
+      </div>
+      <p class="tip"><button type="button" id="water-clear">Clear all water</button></p>
+    </section>
+    <section class="ctrl wide toggle-row">
+      <span class="label" id="fence-label">Fence</span>
+      <button type="button" class="switch" id="fence" role="switch" aria-checked="false" aria-labelledby="fence-label"></button>
+    </section>
+    <section class="ctrl wide">
+      <p class="tip"><button type="button" id="reset-garden">Clear all items</button></p>
+    </section>
+  </div>
+</aside>
+<nav class="toolbar" id="toolbar" aria-label="Actions">
+  <button type="button" id="act-reset" aria-label="Reset">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/><path d="M10 20v-5h4v5"/></svg>
+    <span class="label-text">Reset</span>
+  </button>
+  <button type="button" id="act-random" aria-label="Surprise me">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg>
+    <span class="label-text">Surprise me</span>
+  </button>
+  <button type="button" id="act-rotate" aria-label="Rotate the view">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v5h-5"/></svg>
+    <span class="label-text">Rotate</span>
+  </button>
+  <button type="button" id="act-night" class="icon-only" aria-label="Switch to evening" aria-pressed="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="moon" d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/><g class="sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></g></svg>
+  </button>
+  <button type="button" id="act-postcard" aria-label="Make a postcard">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+    <span class="label-text">Postcard</span>
+  </button>
+  <button type="button" id="act-sound" class="icon-only" aria-label="Sound" aria-pressed="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="wave" d="M16.5 8.5a5 5 0 0 1 0 7"/><path class="mute" d="M17 9l5 6M22 9l-5 6"/></svg>
+  </button>
+  <button type="button" id="act-done" class="primary" aria-label="Done, celebrate">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l5-13 8 8z"/><path d="M14 4l1 2M19 6l-2 1M20 11h-2"/></svg>
+    <span class="label-text">Done!</span>
+  </button>
+</nav>
+<canvas id="confetti" aria-hidden="true"></canvas>
+<div class="item-bar" id="item-bar" hidden>
+  <span id="item-bar-label"></span>
+  <button type="button" id="item-turn" aria-label="Turn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v5h-5"/></svg>
+  </button>
+  <button type="button" id="item-smaller" aria-label="Smaller">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4M8 11h6"/></svg>
+  </button>
+  <button type="button" id="item-bigger" aria-label="Bigger">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4M8 11h6M11 8v6"/></svg>
+  </button>
+  <button type="button" id="item-copy" aria-label="Copy">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="3"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
+  </button>
+  <button type="button" id="item-delete" aria-label="Delete">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
+  </button>
+</div>
+<div class="zoom" id="zoom" role="group" aria-label="Zoom">
+  <button type="button" id="zoom-in" aria-label="Zoom in">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+  </button>
+  <button type="button" id="zoom-out" aria-label="Zoom out">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg>
+  </button>
+  <button type="button" id="zoom-fit" aria-label="Show the whole garden">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+  </button>
+</div>
+<div class="handles" id="handles" hidden></div>
+<div class="room-bar" id="room-bar" role="group" aria-labelledby="room-bar-title" hidden>
+  <div class="room-bar-head">
+    <span id="room-bar-title">Room</span>
+    <button type="button" id="room-bar-close" aria-label="Close">✕</button>
+  </div>
+  <div class="room-bar-options" id="room-bar-options"></div>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+<dialog class="shop" id="shop" aria-labelledby="shop-title">
+  <div class="shop-head">
+    <h2 id="shop-title">Shop items</h2>
+    <button type="button" id="shop-close" aria-label="Close">✕</button>
+  </div>
+  <div class="shop-tabs" id="shop-tabs" role="tablist" aria-label="Kinds of things"></div>
+  <div class="shop-grid" id="shop-grid"></div>
+</dialog>
+<dialog class="postcard" id="postcard" aria-label="Your postcard">
+  <img id="postcard-img" alt="Postcard of Charlotte and Thomas's dream house">
+  <p>Right-click or long-press the picture to save it.</p>
+  <div class="row">
+    <button type="button" id="postcard-close">Close</button>
+  </div>
+</dialog>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>

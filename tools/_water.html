@@ -1,0 +1,41 @@
+<!doctype html><html><body style="margin:0">
+<iframe id="f" style="width:1400px;height:900px;border:0"></iframe>
+<div id="log" style="position:fixed;left:8px;bottom:8px;font:13px monospace;color:#b00;background:#fff;max-width:1300px"></div>
+<script>
+// Paints a river from the left edge, a pond, then wipes part of it with the eraser.
+const q = new URLSearchParams(location.search);
+const f = document.getElementById('f');
+f.src = '/index.html?debug' + (q.get('start') ? '&' + q.get('start') : '');
+const log = m => { document.getElementById('log').textContent += ' | ' + m; };
+const wait = ms => new Promise(r => setTimeout(r, ms));
+f.addEventListener('load', async () => {
+  const w = f.contentWindow, doc = w.document;
+  w.addEventListener('error', e => log('ERR ' + e.message));
+  await wait(5000);
+  const dh = w.__dreamHouse;
+  const finish = () => dh.gsap.globalTimeline.getChildren(true, true, false).forEach(t => t.progress(1));
+  finish();
+  const canvas = doc.querySelector('#stage canvas');
+  const V = dh.camera.position.constructor;
+  const screen = (x, z) => { const p = new V(x, 0, z).add(dh.world.position).project(dh.camera); const r = canvas.getBoundingClientRect(); return [(p.x + 1) / 2 * r.width + r.left, (1 - p.y) / 2 * r.height + r.top]; };
+  const fire = (type, [x, y]) => canvas.dispatchEvent(new w.PointerEvent(type, { clientX: x, clientY: y, pointerId: 6, pointerType: 'mouse', button: 0, bubbles: true }));
+  const stroke = async pts => {
+    fire('pointerdown', screen(...pts[0]));
+    for (let i = 1; i < pts.length; i++) {
+      const [a, b] = [pts[i - 1], pts[i]];
+      for (let s = 1; s <= 6; s++) { fire('pointermove', screen(a[0] + (b[0] - a[0]) * s / 6, a[1] + (b[1] - a[1]) * s / 6)); await wait(15); }
+    }
+    fire('pointerup', screen(...pts[pts.length - 1]));
+    await wait(300); finish();
+  };
+  doc.getElementById('water-paint').click();
+  await stroke([[-5, 1.2], [-3, 1.6], [-1.5, 3.2], [-0.8, 4.9]]);   // river from the left edge to the front edge
+  await stroke([[2.6, 1.0], [3.4, 1.2], [3.2, 1.9], [2.5, 1.7]]);   // a pond
+  log('cells after paint ' + dh.state.water.length);
+  doc.getElementById('water-erase').click();
+  await stroke([[3.4, 1.2], [3.3, 1.8]]);
+  log('after erase ' + dh.state.water.length);
+  doc.getElementById('water-erase').click();
+  log('done');
+});
+</script></body></html>
